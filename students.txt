@@ -1,0 +1,358 @@
+Students - MySQL
+
+- Mise en place DB :
+
+------------------------------------DATABASE CREATION------------------------------------------------
+
+mysql> CREATE DATABASE school
+    -> ;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| school             |
+| sys                |
++--------------------+
+5 rows in set (0.00 sec)
+
+
+
+------------------------------------TABLE CREATION-----------------------------------------------------
+
+
+
+mysql> CREATE TABLE students (
+    -> id INT NOT NULL AUTO_INCREMENT,
+    -> name varchar(30),
+    -> city varchar(30),
+    -> PRIMARY KEY (id)
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+
+
+------------------------------------RAPPORT LVL 1 ----------------------------------------------------
+
+
+
+mysql> SELECT * FROM students WHERE id=3;
++----+------+-----------+
+| id | name | city      |
++----+------+-----------+
+|  3 | Marc | Marseille |
++----+------+-----------+
+1 row in set (0.00 sec)
+
+
+mysql> SELECT * FROM students WHERE id=6;
++----+--------+-------+
+| id | name   | city  |
++----+--------+-------+
+|  6 | Sophie | Paris |
++----+--------+-------+
+1 row in set (0.00 sec)
+
+
+mysql> SELECT students.name, students.city FROM students WHERE id=1;
++-----------+-------+
+| name      | city  |
++-----------+-------+
+| Véronique | Paris |
++-----------+-------+
+1 row in set (0.00 sec)
+
+
+mysql> SELECT students.name FROM students WHERE id=2;
++---------+
+| name    |
++---------+
+| Steeven |
++---------+
+1 row in set (0.00 sec)
+
+
+mysql> SELECT * FROM students WHERE city="Paris";
++----+-----------+-------+
+| id | name      | city  |
++----+-----------+-------+
+|  1 | Véronique | Paris |
+|  5 | Romain    | Paris |
+|  6 | Sophie    | Paris |
++----+-----------+-------+
+3 rows in set (0.00 sec)
+
+
+mysql> SELECT students.name FROM students WHERE city="Lyon";
++---------+
+| name    |
++---------+
+| Steeven |
+| Nour    |
++---------+
+2 rows in set (0.00 sec)
+
+
+
+----------------------------------------RAPPORT LVL 2----------------------------------------------
+
+
+
+mysql> SELECT students.id, students.name, students.city , favorites.class, favorites.sport
+    -> FROM students
+    -> INNER JOIN favorites ON students.id = favorites.student_id
+    -> WHERE students.id=5;
++----+--------+-------+------------------+--------+
+| id | name   | city  | class            | sport  |
++----+--------+-------+------------------+--------+
+|  5 | Romain | Paris | Computer science | Tennis |
++----+--------+-------+------------------+--------+
+1 row in set (0.00 sec)
+
+
+mysql> SELECT students.name, favorites.sport
+    -> FROM students
+    -> INNER JOIN favorites ON students.id = favorites.student_id
+    -> WHERE students.id=4
+    -> ;
++------+----------+
+| name | sport    |
++------+----------+
+| Nour | Baseball |
++------+----------+
+1 row in set (0.00 sec)
+
+
+mysql> SELECT students.name, favorites.class
+    -> FROM students
+    -> INNER JOIN favorites ON students.id = favorites.student_id
+    -> WHERE students.id=1
+    -> ;
++-----------+-------+
+| name      | class |
++-----------+-------+
+| Véronique | Arts  |
++-----------+-------+
+1 row in set (0.00 sec)
+
+
+mysql> SELECT *
+    -> FROM students
+    -> INNER JOIN favorites ON students.id = favorites.student_id
+    -> WHERE favorites.class="Music";
++----+--------+-------+----+-------+---------+------------+
+| id | name   | city  | id | class | sport   | student_id |
++----+--------+-------+----+-------+---------+------------+
+|  6 | Sophie | Paris |  2 | Music | Hip-hop |          6 |
++----+--------+-------+----+-------+---------+------------+
+1 row in set (0.00 sec)
+
+
+mysql> SELECT students.name
+    -> FROM students
+    -> INNER JOIN favorites ON students.id = favorites.student_id
+    -> WHERE favorites.sport="Tennis";
++--------+
+| name   |
++--------+
+| Marc   |
+| Romain |
++--------+
+2 rows in set (0.00 sec)
+
+
+mysql> SELECT students.name
+    -> FROM students
+    -> INNER JOIN favorites ON students.id = favorites.student_id
+    -> WHERE favorites.class="Arts";
++-----------+
+| name      |
++-----------+
+| Véronique |
+| Nour      |
++-----------+
+2 rows in set (0.00 sec)
+
+
+mysql> SELECT COUNT(students.id)
+    -> FROM students
+    -> WHERE city="Paris";
++--------------------+
+| COUNT(students.id) |
++--------------------+
+|                  3 |
++--------------------+
+1 row in set (0.00 sec)
+
+
+
+------------------------------------------------RAPPRT LVL 3------------------------------------------
+
+
+
+mysql> SELECT students.*, languages.name
+    -> FROM students
+    -> INNER JOIN students_languages
+    -> ON students.id = students_languages.student_id
+    -> INNER JOIN languages
+    -> ON students_languages.language_id = languages.id
+    -> WHERE students.id=1
+    -> ;
++----+-----------+-------+---------+
+| id | name      | city  | name    |
++----+-----------+-------+---------+
+|  1 | Véronique | Paris | French  |
+|  1 | Véronique | Paris | English |
++----+-----------+-------+---------+
+2 rows in set (0.00 sec)
+
+
+mysql> SELECT students.*, languages.name
+    -> FROM students
+    -> INNER JOIN students_languages
+    -> ON students.id = students_languages.student_id
+    -> INNER JOIN languages
+    -> ON students_languages.language_id = languages.id
+    -> WHERE students.id=4
+    -> ;
++----+------+------+----------+
+| id | name | city | name     |
++----+------+------+----------+
+|  4 | Nour | Lyon | French   |
+|  4 | Nour | Lyon | English  |
+|  4 | Nour | Lyon | Spanish  |
+|  4 | Nour | Lyon | Mandarin |
++----+------+------+----------+
+4 rows in set (0.00 sec)
+
+
+mysql> SELECT students.name, languages.name
+    -> FROM students
+    -> INNER JOIN students_languages
+    -> ON students.id = students_languages.student_id
+    -> INNER JOIN languages
+    -> ON students_languages.language_id = languages.id
+    -> WHERE students.id=5
+    -> ;
++--------+----------+
+| name   | name     |
++--------+----------+
+| Romain | French   |
+| Romain | Mandarin |
++--------+----------+
+2 rows in set (0.00 sec)
+
+
+
+-------------------------------------RAPPORT LVL 4---------------------------------------------
+
+
+
+mysql> UPDATE students SET name="Idunno" WHERE id=4;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT * FROM students WHERE id=4
+    -> ;
++----+--------+------+
+| id | name   | city |
++----+--------+------+
+|  4 | Idunno | Lyon |
++----+--------+------+
+1 row in set (0.00 sec)
+
+
+mysql> UPDATE students SET city="Idunnocity" WHERE id=1;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT * FROM students WHERE id=1;
++----+-----------+------------+
+| id | name      | city       |
++----+-----------+------------+
+|  1 | Véronique | Idunnocity |
++----+-----------+------------+
+1 row in set (0.00 sec)
+
+
+mysql> DELETE FROM students WHERE id=2;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> SELECT * FROM students;
++----+-----------+------------+
+| id | name      | city       |
++----+-----------+------------+
+|  1 | Véronique | Idunnocity |
+|  3 | Marc      | Marseille  |
+|  4 | Idunno    | Lyon       |
+|  5 | Romain    | Paris      |
+|  6 | Sophie    | Paris      |
++----+-----------+------------+
+5 rows in set (0.00 sec)
+
+
+mysql> DELETE FROM students WHERE city="Paris";
+Query OK, 2 rows affected (0.00 sec)
+
+mysql> SELECT * FROM students;
++----+-----------+------------+
+| id | name      | city       |
++----+-----------+------------+
+|  1 | Véronique | Idunnocity |
+|  3 | Marc      | Marseille  |
+|  4 | Idunno    | Lyon       |
++----+-----------+------------+
+3 rows in set (0.00 sec)
+
+
+
+-----------------------------------------RAPPORT LVL 5------------------------------------------
+
+
+
+mysql> SELECT * FROM students
+    -> WHERE students.name LIKE "%e%"
+    -> ;
++----+-----------+------------+
+| id | name      | city       |
++----+-----------+------------+
+|  1 | Véronique | Idunnocity |
++----+-----------+------------+
+1 row in set (0.00 sec)
+
+
+mysql> SELECT favorites.sport
+    -> FROM students
+    -> INNER JOIN favorites
+    -> ON students.id = favorites.student_id
+    -> WHERE students.name LIKE "%e%"
+    -> ;
++--------+
+| sport  |
++--------+
+| Boxing |
++--------+
+1 row in set (0.00 sec)
+
+
+mysql> SELECT students.city, favorites.class
+    -> FROM students
+    -> INNER JOIN favorites
+    -> ON students.id = favorites.student_id
+    -> WHERE students.city LIKE "%i%"
+    -> ;
++------------+-------------+
+| city       | class       |
++------------+-------------+
+| Idunnocity | Arts        |
+| Marseille  | Litterature |
++------------+-------------+
+2 rows in set (0.00 sec)
+
+
+mysql> \q
+Bye
